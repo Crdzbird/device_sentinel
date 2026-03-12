@@ -1,0 +1,26 @@
+name: vol_spotter_windows
+description: Windows implementation of the vol_spotter plugin
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+flutter:
+  plugin:
+    implements: vol_spotter
+    platforms:
+      windows:
+        pluginClass: VolSpotterWindows
+        dartPluginClass: VolSpotterWindows
+
+dependencies:
+  flutter:
+    sdk: flutter
+  vol_spotter_platform_interface:
+    path: ../vol_spotter_platform_interface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0

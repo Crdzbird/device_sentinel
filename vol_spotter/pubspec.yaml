@@ -1,0 +1,48 @@
+name: vol_spotter
+description: Volumen detector
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: vol_spotter_android
+      ios:
+        default_package: vol_spotter_ios
+      linux:
+        default_package: vol_spotter_linux
+      macos:
+        default_package: vol_spotter_macos
+      web:
+        default_package: vol_spotter_web
+      windows:
+        default_package: vol_spotter_windows
+
+dependencies:
+  flutter:
+    sdk: flutter
+  vol_spotter_android:
+    path: ../vol_spotter_android
+  vol_spotter_ios:
+    path: ../vol_spotter_ios
+  vol_spotter_linux:
+    path: ../vol_spotter_linux
+  vol_spotter_macos:
+    path: ../vol_spotter_macos
+  vol_spotter_platform_interface:
+    path: ../vol_spotter_platform_interface
+  vol_spotter_web:
+    path: ../vol_spotter_web
+  vol_spotter_windows:
+    path: ../vol_spotter_windows
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  plugin_platform_interface: ^2.1.8
+  very_good_analysis: ^10.2.0
