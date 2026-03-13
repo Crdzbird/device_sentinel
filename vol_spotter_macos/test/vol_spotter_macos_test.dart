@@ -19,14 +19,15 @@ void main() {
           .setMockMethodCallHandler(
         volSpotter.methodChannel,
         (methodCall) async {
-        log.add(methodCall);
-        switch (methodCall.method) {
-          case 'getPlatformName':
-            return kPlatformName;
-          default:
-            return null;
-        }
-      });
+          log.add(methodCall);
+          switch (methodCall.method) {
+            case 'getPlatformName':
+              return kPlatformName;
+            default:
+              return null;
+          }
+        },
+      );
     });
 
     test('can be registered', () {
@@ -43,16 +44,32 @@ void main() {
       expect(name, equals(kPlatformName));
     });
 
-    test('buttonEvents returns empty stream', () async {
-      expect(await volSpotter.buttonEvents.isEmpty, isTrue);
+    test('startListening sends default config', () async {
+      await volSpotter.startListening();
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'startListening',
+            arguments: <String, dynamic>{
+              'interceptVolumeEvents': false,
+              'interceptPowerEvents': false,
+            },
+          ),
+        ],
+      );
     });
 
-    test('startListening throws UnsupportedError', () {
-      expect(volSpotter.startListening, throwsUnsupportedError);
+    test('stopListening', () async {
+      await volSpotter.stopListening();
+      expect(
+        log,
+        <Matcher>[isMethodCall('stopListening', arguments: null)],
+      );
     });
 
-    test('stopListening throws UnsupportedError', () {
-      expect(volSpotter.stopListening, throwsUnsupportedError);
+    test('buttonEvents returns a stream', () {
+      expect(volSpotter.buttonEvents, isA<Stream<ButtonEvent>>());
     });
   });
 }

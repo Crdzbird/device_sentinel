@@ -2,12 +2,12 @@ name: vol_spotter_linux
 description: >-
   Linux stub implementation of the vol_spotter plugin. Physical button
   detection is not supported on Linux.
-version: 0.1.0+2
+version: 0.2.0
 repository: https://github.com/Crdzbird/vol_spotter
 
 environment:
-  sdk: ^3.11.0
-  flutter: '>=3.27.0'
+  sdk: ^3.0.0
+  flutter: '>=3.10.0'
 
 flutter:
   plugin:

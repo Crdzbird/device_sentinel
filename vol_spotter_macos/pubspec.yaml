@@ -1,13 +1,14 @@
 name: vol_spotter_macos
 description: >-
-  macOS stub implementation of the vol_spotter plugin. Physical button
-  detection is not supported on macOS.
-version: 0.1.0+2
+  macOS implementation of the vol_spotter plugin for detecting physical
+  button presses (volume keys, power/sleep) using CGEvent taps and
+  NSWorkspace notifications.
+version: 0.2.0
 repository: https://github.com/Crdzbird/vol_spotter
 
 environment:
-  sdk: ^3.11.0
-  flutter: '>=3.27.0'
+  sdk: ^3.0.0
+  flutter: '>=3.10.0'
 
 flutter:
   plugin:

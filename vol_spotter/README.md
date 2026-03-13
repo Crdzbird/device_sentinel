@@ -90,6 +90,10 @@ The plugin uses Dart 3 sealed classes for type-safe pattern matching.
 | [`vol_spotter_platform_interface`](https://pub.dev/packages/vol_spotter_platform_interface) | Shared interface and models |
 | [`vol_spotter_android`](https://pub.dev/packages/vol_spotter_android) | Android implementation |
 | [`vol_spotter_ios`](https://pub.dev/packages/vol_spotter_ios) | iOS implementation |
+| [`vol_spotter_macos`](https://pub.dev/packages/vol_spotter_macos) | macOS implementation |
+| [`vol_spotter_windows`](https://pub.dev/packages/vol_spotter_windows) | Windows implementation |
+| [`vol_spotter_linux`](https://pub.dev/packages/vol_spotter_linux) | Linux stub |
+| [`vol_spotter_web`](https://pub.dev/packages/vol_spotter_web) | Web stub |
 
 ## Platform Details
 
@@ -116,8 +120,8 @@ The plugin uses Dart 3 sealed classes for type-safe pattern matching.
 
 | | Minimum |
 |---|---|
-| Flutter | 3.27.0 |
-| Dart | 3.11.0 |
+| Flutter | 3.10.0 |
+| Dart | 3.0.0 |
 | Android | API 19 |
 | iOS | 13.0 |
 

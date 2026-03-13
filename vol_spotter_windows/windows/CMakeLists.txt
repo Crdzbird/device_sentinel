@@ -7,6 +7,8 @@ set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 add_library(${PLUGIN_NAME} SHARED
   "vol_spotter_windows_plugin.cpp"
   "include/vol_spotter_windows/vol_spotter_windows.h"
+  "volume_key_detector.h"
+  "power_button_detector.h"
 )
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)

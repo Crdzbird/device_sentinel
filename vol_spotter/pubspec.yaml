@@ -2,12 +2,12 @@ name: vol_spotter
 description: >-
   A Flutter plugin for detecting physical button presses (volume up, volume
   down, power) on Android and iOS with configurable event interception.
-version: 0.1.0+2
+version: 0.2.0
 repository: https://github.com/Crdzbird/vol_spotter
 
 environment:
-  sdk: ^3.11.0
-  flutter: '>=3.27.0'
+  sdk: ^3.0.0
+  flutter: '>=3.10.0'
 
 flutter:
   plugin:
