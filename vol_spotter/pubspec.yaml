@@ -28,13 +28,13 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  vol_spotter_android: ^0.1.0
-  vol_spotter_ios: ^0.1.0
-  vol_spotter_linux: ^0.1.0
-  vol_spotter_macos: ^0.1.0
-  vol_spotter_platform_interface: ^0.1.0
-  vol_spotter_web: ^0.1.0
-  vol_spotter_windows: ^0.1.0
+  vol_spotter_android: ^0.2.0
+  vol_spotter_ios: ^0.2.0
+  vol_spotter_linux: ^0.2.0
+  vol_spotter_macos: ^0.2.0
+  vol_spotter_platform_interface: ^0.2.0
+  vol_spotter_web: ^0.2.0
+  vol_spotter_windows: ^0.2.0
 
 dev_dependencies:
   flutter_test:

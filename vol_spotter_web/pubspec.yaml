@@ -22,7 +22,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  vol_spotter_platform_interface: ^0.1.0
+  vol_spotter_platform_interface: ^0.2.0
 
 dev_dependencies:
   flutter_test:
