@@ -1,58 +1,84 @@
-# Vol Spotter
+# Device Sentinel
 
 [![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-A Flutter plugin for detecting physical button presses — **Volume Up**, **Volume Down**, and **Power** — on Android and iOS.
+A Flutter plugin for monitoring **physical button presses** and **device security events** on Android and iOS.
 
-Built with the [Very Good Ventures](https://verygood.ventures/) federated plugin architecture for clean separation of platform code and maximum testability.
+Detects Volume Up, Volume Down, and Power button events with configurable interception, plus ~25 types of security events including network changes, screen lock, battery levels, USB debugging, screen capture, and more.
+
+Built with the [Very Good Ventures](https://verygood.ventures/) federated plugin architecture.
+
+> **Formerly `vol_spotter`** - renamed to `device_sentinel` in v1.0.0.
 
 ---
 
 ## Features
 
+### Button Detection
 - Detect **Volume Up**, **Volume Down**, and **Power** button events
-- **Configurable interception** — consume volume events so the system volume stays unchanged, or simply observe them
-- **Type-safe API** using Dart 3 sealed classes and exhaustive pattern matching
-- Broadcast stream — attach multiple listeners to the same event source
-- Federated architecture — only the platforms you target are compiled
+- **Configurable interception** -- consume volume events so the system volume stays unchanged, or simply observe them
+- Broadcast stream with multiple listeners
+
+### Security Event Monitoring
+- **~25 event types** organized in 5 categories (Shutdown, Connectivity, Screen/Lock, Power/USB, Security Posture)
+- **String wire protocol** with forward compatibility -- unknown events return `null`
+- **Granular control** via `SecurityConfig` to enable/disable categories
+- Type-safe API using Dart 3 sealed classes and exhaustive pattern matching
 
 ## Platform Support
 
+### Button Events
+
 | Platform | Volume Up/Down | Power Button | Interception |
 |----------|:--------------:|:------------:|:------------:|
-| Android  | ✅             | ✅           | ✅ (volume)  |
-| iOS      | ✅             | ✅           | ✅ (volume)  |
-| Web      | —              | —            | —            |
-| Desktop  | —              | —            | —            |
+| Android  |       ✅       |      ✅      | ✅ (volume)  |
+| iOS      |       ✅       |      ✅      | ✅ (volume)  |
+| macOS    |       ✅       |      ✅      |      --      |
+| Windows  |       ✅       |      ✅      | ✅ (volume)  |
+| Linux    |       --       |      --      |      --      |
+| Web      |       --       |      --      |      --      |
 
-> **Note:** Power button events cannot be truly intercepted on either platform — `interceptPowerEvents` is observe-only.
+### Security Events
+
+| Event | Android | iOS |
+|-------|:-------:|:---:|
+| Shutdown / Reboot detected | ✅ | -- |
+| Unclean shutdown | ✅ | ✅ |
+| Airplane mode | ✅ | -- |
+| Network connected/disconnected | ✅ | ✅ |
+| Network capabilities (WiFi/Mobile) | ✅ | ✅ |
+| VPN established/disconnected | ✅ | ✅ |
+| Screen on/off | ✅ | ✅ |
+| Device locked/unlocked | ✅ | ✅ |
+| User present (after unlock) | ✅ | -- |
+| Power connected/disconnected | ✅ | ✅ |
+| Battery low (<=20%) / critical (<=5%) | ✅ | ✅ |
+| USB debugging enabled/disabled | ✅ | -- |
+| Screen capture started/stopped | ✅ (API 34+) | ✅ |
+| Developer mode enabled/disabled | ✅ | -- |
 
 ## Getting Started
 
 ### Installation
 
-Add `vol_spotter` to your `pubspec.yaml`:
-
 ```yaml
 dependencies:
-  vol_spotter: ^0.1.0
+  device_sentinel: ^1.0.0
 ```
 
-### Quick Start
+### Button Detection
 
 ```dart
-import 'package:vol_spotter/vol_spotter.dart';
+import 'package:device_sentinel/device_sentinel.dart';
 
-final volSpotter = const VolSpotter();
+final sentinel = const DeviceSentinel();
 
-// Start listening (optionally intercept volume so system volume doesn't change)
-await volSpotter.startListening(
-  config: const VolSpotterConfig(interceptVolumeEvents: true),
+await sentinel.startListening(
+  config: const DeviceSentinelConfig(interceptVolumeEvents: true),
 );
 
-// React to button presses
-volSpotter.buttonEvents.listen((event) {
+sentinel.buttonEvents.listen((event) {
   if (event.action is! ButtonPressed) return;
 
   switch (event.button) {
@@ -65,92 +91,114 @@ volSpotter.buttonEvents.listen((event) {
   }
 });
 
-// When done
-await volSpotter.stopListening();
+await sentinel.stopListening();
+```
+
+### Security Event Monitoring
+
+```dart
+await sentinel.startSecurityMonitoring(
+  config: const SecurityConfig(
+    monitorShutdown: true,
+    monitorConnectivity: true,
+    monitorScreenLock: true,
+    monitorPowerUsb: true,
+    monitorSecurityPosture: true,
+  ),
+);
+
+sentinel.securityEvents.listen((event) {
+  switch (event) {
+    case ScreenOff():
+      print('Screen turned off');
+    case DeviceLocked():
+      print('Device locked');
+    case NetworkDisconnected():
+      print('Network lost');
+    case BatteryLow(:final level):
+      print('Battery low: $level%');
+    case ScreenCaptureStarted():
+      print('Screen recording detected!');
+    case UncleanShutdownDetected(:final lastSeenTimestamp):
+      print('Crash detected! Last seen: $lastSeenTimestamp');
+    default:
+      print('Security event: $event');
+  }
+});
+
+await sentinel.stopSecurityMonitoring();
 ```
 
 ## API Reference
 
-### `VolSpotter`
+### `DeviceSentinel`
 
 | Member | Type | Description |
 |--------|------|-------------|
 | `buttonEvents` | `Stream<ButtonEvent>` | Broadcast stream of physical button events |
 | `startListening({config})` | `Future<void>` | Begin detecting button presses |
-| `stopListening()` | `Future<void>` | Stop detection and release native resources |
+| `stopListening()` | `Future<void>` | Stop button detection |
+| `securityEvents` | `Stream<DeviceSecurityEvent>` | Broadcast stream of security events |
+| `startSecurityMonitoring({config})` | `Future<void>` | Begin monitoring security events |
+| `stopSecurityMonitoring()` | `Future<void>` | Stop security monitoring |
 
-### `VolSpotterConfig`
+### `SecurityConfig`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `interceptVolumeEvents` | `bool` | `false` | When `true`, volume key presses are consumed — the system volume does not change |
-| `interceptPowerEvents` | `bool` | `false` | Informational only — power button cannot be truly intercepted |
+| `monitorShutdown` | `bool` | `true` | Shutdown, reboot, unclean shutdown events |
+| `monitorConnectivity` | `bool` | `true` | Network, airplane mode, VPN events |
+| `monitorScreenLock` | `bool` | `true` | Screen on/off, lock/unlock events |
+| `monitorPowerUsb` | `bool` | `true` | Charger, battery, USB debugging events |
+| `monitorSecurityPosture` | `bool` | `true` | Screen capture, developer mode events |
 
-### `ButtonEvent`
+### `DeviceSecurityEvent` (sealed class hierarchy)
 
-Combines a `PhysicalButton` and a `ButtonAction`:
-
-```dart
-sealed class PhysicalButton  →  VolumeUpButton | VolumeDownButton | PowerButton
-sealed class ButtonAction    →  ButtonPressed  | ButtonReleased
-```
-
-> **iOS limitation:** Volume buttons only emit `ButtonPressed` (no `ButtonReleased`). Power button detection uses `protectedDataWillBecomeUnavailableNotification`.
-
-## Example App
-
-The included example app is a counter driven entirely by hardware buttons:
-
-- **Volume Up** → increment
-- **Volume Down** → decrement
-- **Power** → reset to 0
-
-Run it with:
-
-```bash
-cd vol_spotter/example
-flutter run
-```
+| Category | Events |
+|----------|--------|
+| Shutdown | `ShutdownDetected`, `RebootDetected`, `UncleanShutdownDetected(lastSeenTimestamp)` |
+| Connectivity | `AirplaneModeOn/Off`, `NetworkConnected/Disconnected`, `NetworkCapsChanged(hasWifi, hasMobile)`, `VpnEstablished/Disconnected` |
+| Screen/Lock | `ScreenOff/On`, `DeviceLocked/Unlocked`, `UserPresent` |
+| Power/USB | `PowerConnected/Disconnected`, `BatteryLow(level)`, `BatteryCritical(level)`, `UsbDebuggingEnabled/Disabled` |
+| Security | `ScreenCaptureStarted/Stopped`, `DevModeEnabled/Disabled` |
 
 ## Architecture
 
-This plugin follows the **federated plugin** pattern:
-
 ```
-vol_spotter/                        # App-facing package (public API)
-vol_spotter_platform_interface/     # Abstract interface + domain models
-vol_spotter_android/                # Android implementation (Kotlin)
-vol_spotter_ios/                    # iOS implementation (Swift)
-vol_spotter_linux/                  # Stub (UnsupportedError)
-vol_spotter_macos/                  # Stub (UnsupportedError)
-vol_spotter_web/                    # Stub (UnsupportedError)
-vol_spotter_windows/                # Stub (UnsupportedError)
+device_sentinel/                        # App-facing package (public API)
+device_sentinel_platform_interface/     # Abstract interface + domain models
+device_sentinel_android/                # Android implementation (Kotlin)
+device_sentinel_ios/                    # iOS implementation (Swift)
+device_sentinel_macos/                  # macOS implementation (Swift)
+device_sentinel_windows/                # Windows implementation (C++)
+device_sentinel_linux/                  # Stub
+device_sentinel_web/                    # Stub
 ```
 
-**Native approach:**
+### Native Implementation
 
-| Platform | Volume Detection | Power Detection |
+| Platform | Button Detection | Security Events |
 |----------|-----------------|-----------------|
-| Android  | `Window.Callback` proxy intercepting `KEYCODE_VOLUME_UP/DOWN` | `BroadcastReceiver` for `ACTION_SCREEN_OFF` |
-| iOS      | KVO on `AVAudioSession.outputVolume` + hidden `MPVolumeView` | `protectedDataWillBecomeUnavailableNotification` |
+| Android | `Window.Callback` proxy for volume keys; `BroadcastReceiver` for power | `BroadcastReceiver`, `ConnectivityManager.NetworkCallback`, `ContentObserver`, `Activity.ScreenCaptureCallback` (API 34+) |
+| iOS | KVO on `AVAudioSession.outputVolume` + `MPVolumeView`; `protectedDataWillBecomeUnavailableNotification` | `NWPathMonitor`, Darwin notification center, `UIDevice` battery, `UIScreen.capturedDidChangeNotification` |
 
 ## Running Tests
 
 ```bash
-# Run tests for all packages
-for pkg in vol_spotter_platform_interface vol_spotter_android vol_spotter_ios \
-           vol_spotter vol_spotter_linux vol_spotter_macos vol_spotter_windows \
-           vol_spotter_web; do
+for pkg in device_sentinel_platform_interface device_sentinel_android device_sentinel_ios \
+           device_sentinel device_sentinel_linux device_sentinel_macos device_sentinel_windows \
+           device_sentinel_web; do
   (cd "$pkg" && flutter test)
 done
 ```
 
 ## Known Limitations
 
-- **iOS volume events** — Only `ButtonPressed` is emitted (KVO fires once per press, no release detection)
-- **iOS volume interception** — Brief visual flicker is possible when resetting volume via `MPVolumeView` slider
-- **Power button** — Cannot be consumed/intercepted on either platform; detection only
-- **iOS Simulator** — Volume buttons can be simulated via **Hardware → Volume Up/Down**; power button detection requires a physical device
+- **iOS volume events** -- Only `ButtonPressed` is emitted (no release detection)
+- **Power button** -- Cannot be consumed/intercepted on either platform; detection only
+- **Screen capture on Android** -- Requires API 34+ (Android 14)
+- **iOS lock detection** -- Uses Darwin notifications which may have slight delays
+- **Unclean shutdown** -- Uses heartbeat + SharedPreferences/UserDefaults heuristic; not 100% reliable
 
 ## Credits
 
@@ -160,7 +208,7 @@ Built with the [Very Good CLI][very_good_cli_link] federated plugin template by 
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License -- see the [LICENSE](LICENSE) file for details.
 
 [very_good_cli_link]: https://github.com/VeryGoodOpenSource/very_good_cli
-[very_good_ventures_link]: https://verygood.ventures/?utm_source=github&utm_medium=banner&utm_campaign=core
+[very_good_ventures_link]: https://verygood.ventures/?utm_source=github&utm_medium=banner&utm_campaign=device_sentinel

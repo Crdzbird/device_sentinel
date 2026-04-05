@@ -1,0 +1,30 @@
+name: device_sentinel_web
+description: >-
+  Web stub implementation of the device_sentinel plugin. Physical button
+  detection is not supported on the web.
+version: 1.0.0
+repository: https://github.com/Crdzbird/device_sentinel
+
+environment:
+  sdk: ^3.0.0
+  flutter: '>=3.10.0'
+
+flutter:
+  plugin:
+    implements: device_sentinel
+    platforms:
+      web:
+        pluginClass: DeviceSentinelWeb
+        fileName: device_sentinel_web.dart
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  device_sentinel_platform_interface: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0

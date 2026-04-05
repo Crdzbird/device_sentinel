@@ -1,0 +1,4 @@
+# Local development overrides — not published.
+dependency_overrides:
+  device_sentinel_platform_interface:
+    path: ../device_sentinel_platform_interface

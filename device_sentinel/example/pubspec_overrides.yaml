@@ -1,0 +1,18 @@
+# Local development overrides — not published.
+dependency_overrides:
+  device_sentinel:
+    path: ../
+  device_sentinel_android:
+    path: ../../device_sentinel_android
+  device_sentinel_ios:
+    path: ../../device_sentinel_ios
+  device_sentinel_linux:
+    path: ../../device_sentinel_linux
+  device_sentinel_macos:
+    path: ../../device_sentinel_macos
+  device_sentinel_platform_interface:
+    path: ../../device_sentinel_platform_interface
+  device_sentinel_web:
+    path: ../../device_sentinel_web
+  device_sentinel_windows:
+    path: ../../device_sentinel_windows

@@ -1,0 +1,44 @@
+name: device_sentinel
+description: >-
+  A Flutter plugin for detecting physical button presses (volume up, volume
+  down, power) on Android and iOS with configurable event interception.
+version: 1.0.0
+repository: https://github.com/Crdzbird/device_sentinel
+
+environment:
+  sdk: ^3.0.0
+  flutter: '>=3.10.0'
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: device_sentinel_android
+      ios:
+        default_package: device_sentinel_ios
+      linux:
+        default_package: device_sentinel_linux
+      macos:
+        default_package: device_sentinel_macos
+      web:
+        default_package: device_sentinel_web
+      windows:
+        default_package: device_sentinel_windows
+
+dependencies:
+  flutter:
+    sdk: flutter
+  device_sentinel_android: ^1.0.0
+  device_sentinel_ios: ^1.0.0
+  device_sentinel_linux: ^1.0.0
+  device_sentinel_macos: ^1.0.0
+  device_sentinel_platform_interface: ^1.0.0
+  device_sentinel_web: ^1.0.0
+  device_sentinel_windows: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  plugin_platform_interface: ^2.1.8
+  very_good_analysis: ^10.2.0

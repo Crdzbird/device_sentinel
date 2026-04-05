@@ -1,0 +1,29 @@
+name: device_sentinel_macos
+description: >-
+  macOS implementation of the device_sentinel plugin for detecting physical
+  button presses (volume keys, power/sleep) using CGEvent taps and
+  NSWorkspace notifications.
+version: 1.0.0
+repository: https://github.com/Crdzbird/device_sentinel
+
+environment:
+  sdk: ^3.0.0
+  flutter: '>=3.10.0'
+
+flutter:
+  plugin:
+    implements: device_sentinel
+    platforms:
+      macos:
+        pluginClass: DeviceSentinelPlugin
+        dartPluginClass: DeviceSentinelMacOS
+
+dependencies:
+  flutter:
+    sdk: flutter
+  device_sentinel_platform_interface: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0

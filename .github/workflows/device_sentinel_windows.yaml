@@ -1,0 +1,25 @@
+name: device_sentinel_windows
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/device_sentinel_windows.yaml"
+      - "device_sentinel_windows/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/device_sentinel_windows.yaml"
+      - "device_sentinel_windows/**"
+
+jobs:
+  build:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      flutter_version: 3.41.1
+      working_directory: device_sentinel_windows
+

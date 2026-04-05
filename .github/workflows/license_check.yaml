@@ -9,15 +9,15 @@ on:
     branches:
       - main
     paths:
-      - "vol_spotter/pubspec.yaml"
-      - "vol_spotter_platform_interface/pubspec.yaml"
+      - "device_sentinel/pubspec.yaml"
+      - "device_sentinel_platform_interface/pubspec.yaml"
       - ".github/workflows/license_check.yaml"
   push:
     branches:
       - main
     paths:
-      - "vol_spotter/pubspec.yaml"
-      - "vol_spotter_platform_interface/pubspec.yaml"
+      - "device_sentinel/pubspec.yaml"
+      - "device_sentinel_platform_interface/pubspec.yaml"
       - ".github/workflows/license_check.yaml"
 
 jobs:
@@ -25,10 +25,10 @@ jobs:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/license_check.yml@v1
     with:
       allowed: "MIT,BSD-3-Clause,BSD-2-Clause,Apache-2.0"
-      working_directory: vol_spotter
+      working_directory: device_sentinel
 
   license_check_platform_interface:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/license_check.yml@v1
     with:
       allowed: "MIT,BSD-3-Clause,BSD-2-Clause,Apache-2.0"
-      working_directory: vol_spotter_platform_interface
+      working_directory: device_sentinel_platform_interface

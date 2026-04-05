@@ -6,38 +6,38 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter"
+    directory: "/device_sentinel"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter/example"
+    directory: "/device_sentinel/example"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_platform_interface"
+    directory: "/device_sentinel_platform_interface"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_android"
+    directory: "/device_sentinel_android"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_ios"
+    directory: "/device_sentinel_ios"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_linux"
+    directory: "/device_sentinel_linux"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_macos"
+    directory: "/device_sentinel_macos"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_web"
+    directory: "/device_sentinel_web"
     schedule:
       interval: "daily"
   - package-ecosystem: "pub"
-    directory: "/vol_spotter_windows"
+    directory: "/device_sentinel_windows"
     schedule:
       interval: "daily"

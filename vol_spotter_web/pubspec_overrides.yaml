@@ -1,4 +1,0 @@
-# Local development overrides — not published.
-dependency_overrides:
-  vol_spotter_platform_interface:
-    path: ../vol_spotter_platform_interface
