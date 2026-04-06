@@ -6,8 +6,6 @@
 
 A Flutter plugin for monitoring **physical button presses** and **device security events** on Android, iOS, macOS, and Windows.
 
-> **Formerly `vol_spotter`** -- renamed to `device_sentinel` in v1.0.0.
-
 ## Features
 
 ### Button Detection
@@ -24,10 +22,117 @@ A Flutter plugin for monitoring **physical button presses** and **device securit
 - Screen capture/recording detection
 - Shutdown, reboot, unclean shutdown detection
 
-### Unified API
-- Single `events` stream delivers **both** button and security events
-- One `SentinelConfig` controls per-button interception **and** security category toggles
-- Typed `DeviceSentinelException` hierarchy -- no raw strings
+## Getting Started
+
+```sh
+flutter pub add device_sentinel
+```
+
+## Usage
+
+### Observe Buttons (no interception)
+
+Detect button presses without blocking the default OS behaviour. The system
+volume still changes, the screen still locks -- you just get notified.
+
+```dart
+import 'package:device_sentinel/device_sentinel.dart';
+
+const sentinel = DeviceSentinel();
+
+// 1. Listen for button events.
+sentinel.events.whereType<ButtonEvent>().listen((event) {
+  print('${event.button} ${event.action}'); // VolumeUpButton() ButtonPressed()
+});
+
+// 2. Start with defaults -- all buttons observed, none intercepted.
+await sentinel.start();
+```
+
+### Intercept Volume Buttons
+
+Consume a button press so the OS does **not** perform its default action.
+For example, prevent volume from changing when the user presses Volume Up:
+
+```dart
+await sentinel.start(
+  config: const SentinelConfig(
+    interceptVolumeUp: true,   // consume -- system volume won't change
+    interceptVolumeDown: false, // observe -- system volume still changes
+  ),
+);
+```
+
+You still receive a `ButtonEvent` for every press. The only difference is
+whether the OS also processes it.
+
+### Monitor Security Events
+
+Listen for device-level security events such as network changes,
+screen lock, battery state, and more:
+
+```dart
+sentinel.events.whereType<DeviceSecurityEvent>().listen((event) {
+  switch (event) {
+    case NetworkConnected():
+      print('Back online');
+    case NetworkDisconnected():
+      print('Network lost');
+    case DeviceLocked():
+      print('Device locked');
+    case BatteryLow(:final level):
+      print('Battery low: $level%');
+    case ScreenCaptureStarted():
+      print('Screen recording detected!');
+    case _:
+      print('Event: $event');
+  }
+});
+
+// Only monitor connectivity and screen/lock -- skip shutdown, battery, etc.
+await sentinel.start(
+  config: const SentinelConfig(
+    monitorConnectivity: true,
+    monitorScreenLock: true,
+    monitorShutdown: false,
+    monitorPowerUsb: false,
+    monitorSecurityPosture: false,
+  ),
+);
+```
+
+### Listen to Everything
+
+A single stream delivers **both** button and security events:
+
+```dart
+sentinel.events.listen((event) {
+  switch (event) {
+    case ButtonEvent(:final button, :final action):
+      print('Button: $button $action');
+    case DeviceSecurityEvent():
+      print('Security: $event');
+  }
+});
+```
+
+### Stop Monitoring
+
+```dart
+await sentinel.stop();
+```
+
+### Error Handling
+
+```dart
+try {
+  await sentinel.start();
+} on PlatformUnsupportedException catch (e) {
+  print('Not available on ${e.platform}');
+} on DeviceSentinelException catch (e) {
+  print('Sentinel error: $e');
+}
+```
 
 ## Platform Support
 
@@ -57,67 +162,6 @@ A Flutter plugin for monitoring **physical button presses** and **device securit
 | USB debugging | ✅ | -- |
 | Screen capture | ✅ (API 34+) | ✅ |
 | Developer mode | ✅ | -- |
-
-## Getting Started
-
-```sh
-flutter pub add device_sentinel
-```
-
-## Usage
-
-### Unified API (Recommended)
-
-```dart
-import 'package:device_sentinel/device_sentinel.dart';
-
-final sentinel = const DeviceSentinel();
-
-// Listen to ALL events in a single stream.
-sentinel.events.listen((event) {
-  switch (event) {
-    case ButtonEvent(:final button, :final action):
-      print('Button: $button $action');
-    case DeviceSecurityEvent():
-      print('Security: $event');
-  }
-});
-
-// Start with per-button interception + security categories.
-await sentinel.start(
-  config: SentinelConfig(
-    interceptVolumeUp: true,   // consume Vol Up
-    interceptVolumeDown: false, // observe Vol Down
-    monitorScreenLock: true,
-    monitorConnectivity: true,
-  ),
-);
-
-// Stop when done.
-await sentinel.stop();
-```
-
-### Filtering Events
-
-```dart
-// Only button events
-sentinel.events.whereType<ButtonEvent>().listen((e) => print(e));
-
-// Only security events
-sentinel.events.whereType<DeviceSecurityEvent>().listen((e) => print(e));
-```
-
-### Error Handling
-
-```dart
-try {
-  await sentinel.start();
-} on PlatformUnsupportedException catch (e) {
-  print('Not available: ${e.platform}');
-} on DeviceSentinelException catch (e) {
-  print('Sentinel error: $e');
-}
-```
 
 ## Models
 
