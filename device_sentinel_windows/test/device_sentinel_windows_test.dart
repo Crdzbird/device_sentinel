@@ -7,7 +7,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('DeviceSentinelWindows', () {
-    const kPlatformName = 'Windows';
     late DeviceSentinelWindows plugin;
     late List<MethodCall> log;
 
@@ -20,12 +19,7 @@ void main() {
         plugin.methodChannel,
         (methodCall) async {
           log.add(methodCall);
-          switch (methodCall.method) {
-            case 'getPlatformName':
-              return kPlatformName;
-            default:
-              return null;
-          }
+          return null;
         },
       );
     });
@@ -36,15 +30,6 @@ void main() {
         DeviceSentinelPlatform.instance,
         isA<DeviceSentinelWindows>(),
       );
-    });
-
-    test('getPlatformName returns correct name', () async {
-      final name = await plugin.getPlatformName();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getPlatformName', arguments: null)],
-      );
-      expect(name, equals(kPlatformName));
     });
 
     test('events returns a stream', () {

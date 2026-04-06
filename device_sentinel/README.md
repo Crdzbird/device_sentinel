@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
 
-A Flutter plugin for monitoring **physical button presses** and **device security events** on Android and iOS.
+A Flutter plugin for monitoring **physical button presses** and **device security events** on Android, iOS, macOS, and Windows.
 
 > **Formerly `vol_spotter`** -- renamed to `device_sentinel` in v1.0.0.
 
@@ -12,10 +12,10 @@ A Flutter plugin for monitoring **physical button presses** and **device securit
 
 ### Button Detection
 - Detect **Volume Up**, **Volume Down**, and **Power** button events
-- **Configurable interception** -- consume volume events so the system volume stays unchanged
+- **Per-button interception** -- independently consume each volume button so the system volume stays unchanged
 - Works on Android, iOS, macOS, and Windows
 
-### Security Event Monitoring (NEW in 1.0.0)
+### Security Event Monitoring
 - **~25 event types** across 5 categories
 - Network connectivity, VPN, airplane mode
 - Screen lock/unlock, screen on/off
@@ -23,6 +23,11 @@ A Flutter plugin for monitoring **physical button presses** and **device securit
 - USB debugging, developer mode
 - Screen capture/recording detection
 - Shutdown, reboot, unclean shutdown detection
+
+### Unified API
+- Single `events` stream delivers **both** button and security events
+- One `SentinelConfig` controls per-button interception **and** security category toggles
+- Typed `DeviceSentinelException` hierarchy -- no raw strings
 
 ## Platform Support
 
@@ -32,7 +37,7 @@ A Flutter plugin for monitoring **physical button presses** and **device securit
 |---|:---:|:---:|:---:|:---:|
 | Volume Up/Down | ✅ | ✅ | ✅ | ✅ |
 | Power button | ✅ | ✅ | ✅ | ✅ |
-| Volume interception | ✅ | ✅ | ✅ | ✅ |
+| Per-button interception | ✅ | ✅ | ✅ | ✅ |
 | `pressed` + `released` | ✅ | `pressed` only | ✅ | ✅ |
 
 ### Security Events
@@ -61,64 +66,57 @@ flutter pub add device_sentinel
 
 ## Usage
 
-### Button Events
+### Unified API (Recommended)
 
 ```dart
 import 'package:device_sentinel/device_sentinel.dart';
 
 final sentinel = const DeviceSentinel();
 
-await sentinel.startListening(
-  config: const DeviceSentinelConfig(interceptVolumeEvents: true),
-);
-
-sentinel.buttonEvents.listen((event) {
-  if (event.action is! ButtonPressed) return;
-  switch (event.button) {
-    case VolumeUpButton():
-      print('Volume Up');
-    case VolumeDownButton():
-      print('Volume Down');
-    case PowerButton():
-      print('Power');
+// Listen to ALL events in a single stream.
+sentinel.events.listen((event) {
+  switch (event) {
+    case ButtonEvent(:final button, :final action):
+      print('Button: $button $action');
+    case DeviceSecurityEvent():
+      print('Security: $event');
   }
 });
 
-await sentinel.stopListening();
-```
-
-### Security Events
-
-```dart
-await sentinel.startSecurityMonitoring(
-  config: const SecurityConfig(
-    monitorConnectivity: true,
+// Start with per-button interception + security categories.
+await sentinel.start(
+  config: SentinelConfig(
+    interceptVolumeUp: true,   // consume Vol Up
+    interceptVolumeDown: false, // observe Vol Down
     monitorScreenLock: true,
-    monitorPowerUsb: true,
-    monitorSecurityPosture: true,
+    monitorConnectivity: true,
   ),
 );
 
-sentinel.securityEvents.listen((event) {
-  switch (event) {
-    case ScreenOff():
-      print('Screen off');
-    case DeviceLocked():
-      print('Device locked');
-    case NetworkDisconnected():
-      print('Network lost');
-    case BatteryLow(:final level):
-      print('Battery low: $level%');
-    case ScreenCaptureStarted():
-      print('Screen recording detected!');
-    case UncleanShutdownDetected(:final lastSeenTimestamp):
-      print('Crash detected! Last seen: $lastSeenTimestamp');
-    default:
-      print('Event: $event');
-  }
-});
+// Stop when done.
+await sentinel.stop();
+```
 
-await sentinel.stopSecurityMonitoring();
+### Filtering Events
+
+```dart
+// Only button events
+sentinel.events.whereType<ButtonEvent>().listen((e) => print(e));
+
+// Only security events
+sentinel.events.whereType<DeviceSecurityEvent>().listen((e) => print(e));
+```
+
+### Error Handling
+
+```dart
+try {
+  await sentinel.start();
+} on PlatformUnsupportedException catch (e) {
+  print('Not available: ${e.platform}');
+} on DeviceSentinelException catch (e) {
+  print('Sentinel error: $e');
+}
 ```
 
 ## Models
@@ -128,9 +126,9 @@ await sentinel.stopSecurityMonitoring();
 | `PhysicalButton` | `VolumeUpButton`, `VolumeDownButton`, `PowerButton` |
 | `ButtonAction` | `ButtonPressed`, `ButtonReleased` |
 | `ButtonEvent` | Combines `PhysicalButton` + `ButtonAction` |
-| `DeviceSentinelConfig` | `interceptVolumeEvents`, `interceptPowerEvents` |
 | `DeviceSecurityEvent` | ~25 sealed subtypes (see table above) |
-| `SecurityConfig` | 5 boolean category flags |
+| `SentinelConfig` | Per-button interception + 5 security category flags |
+| `DeviceSentinelException` | `PlatformUnsupportedException`, `InvalidEventDataException`, `UnknownButtonException`, `UnknownButtonActionException` |
 
 ## Architecture
 
@@ -162,11 +160,11 @@ await sentinel.stopSecurityMonitoring();
 - **iOS volume events** -- only `ButtonPressed` is emitted (no release)
 - **Screen capture on Android** -- requires API 34+ (Android 14)
 - **Unclean shutdown** -- heuristic based on heartbeat; not 100% reliable
-- **Linux / Web** -- stub implementations, `startListening()` / `startSecurityMonitoring()` throw `UnsupportedError`
+- **Linux / Web** -- stub implementations; `start()` / `stop()` throw `PlatformUnsupportedException`
 
 ## Credits
 
-Created and maintained by [@Crdzbird](https://github.com/Crdzbird).
+Created and maintained by [DEVotion](https://github.com/Crdzbird) ([@Crdzbird](https://github.com/Crdzbird)).
 
 ## License
 

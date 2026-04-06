@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 /// Supports button detection only. Security monitoring is not available.
 class DeviceSentinelMacOS extends DeviceSentinelPlatform
     with ButtonOnlyEventChannelMixin {
-  /// The primary method channel (button lifecycle + getPlatformName).
+  /// The primary method channel for button lifecycle calls.
   @override
   @visibleForTesting
   final methodChannel = const MethodChannel('device_sentinel_macos');

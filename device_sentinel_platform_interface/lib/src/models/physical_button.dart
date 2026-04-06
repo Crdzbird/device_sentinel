@@ -1,20 +1,33 @@
+import 'package:device_sentinel_platform_interface/src/models/device_sentinel_exception.dart';
 import 'package:meta/meta.dart';
 
+/// {@template physical_button}
 /// Represents a physical hardware button on the device.
+///
+/// Use [PhysicalButton.fromString] to deserialize from a platform channel
+/// value, or pattern-match on the sealed subtypes:
+///
+/// ```dart
+/// switch (button) {
+///   case VolumeUpButton(): // ...
+///   case VolumeDownButton(): // ...
+///   case PowerButton(): // ...
+/// }
+/// ```
+/// {@endtemplate}
 @immutable
 sealed class PhysicalButton {
+  /// {@macro physical_button}
   const PhysicalButton();
 
   /// Deserializes a [PhysicalButton] from its string [value].
+  ///
+  /// Throws [UnknownButtonException] if [value] is not recognised.
   factory PhysicalButton.fromString(String value) => switch (value) {
         'volumeUp' => const VolumeUpButton(),
         'volumeDown' => const VolumeDownButton(),
         'power' => const PowerButton(),
-        _ => throw ArgumentError.value(
-          value,
-          'value',
-          'Unknown button type',
-        ),
+        _ => throw UnknownButtonException(value: value),
       };
 
   /// Serialization key for this button type.

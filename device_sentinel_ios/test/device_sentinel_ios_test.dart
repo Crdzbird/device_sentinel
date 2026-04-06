@@ -7,7 +7,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('DeviceSentinelIOS', () {
-    const kPlatformName = 'iOS';
     late DeviceSentinelIOS plugin;
     late List<MethodCall> log;
 
@@ -20,12 +19,7 @@ void main() {
         plugin.methodChannel,
         (methodCall) async {
           log.add(methodCall);
-          switch (methodCall.method) {
-            case 'getPlatformName':
-              return kPlatformName;
-            default:
-              return null;
-          }
+          return null;
         },
       );
     });
@@ -33,15 +27,6 @@ void main() {
     test('can be registered', () {
       DeviceSentinelIOS.registerWith();
       expect(DeviceSentinelPlatform.instance, isA<DeviceSentinelIOS>());
-    });
-
-    test('getPlatformName returns correct name', () async {
-      final name = await plugin.getPlatformName();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getPlatformName', arguments: null)],
-      );
-      expect(name, equals(kPlatformName));
     });
 
     test('events returns a stream', () {

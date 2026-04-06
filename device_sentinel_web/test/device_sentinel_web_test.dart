@@ -17,21 +17,22 @@ void main() {
       expect(DeviceSentinelPlatform.instance, isA<DeviceSentinelWeb>());
     });
 
-    test('getPlatformName returns correct name', () async {
-      final name = await plugin.getPlatformName();
-      expect(name, equals('Web'));
-    });
-
     test('events returns empty stream', () async {
       expect(await plugin.events.isEmpty, isTrue);
     });
 
-    test('start throws UnsupportedError', () {
-      expect(plugin.start, throwsUnsupportedError);
+    test('start throws PlatformUnsupportedException', () {
+      expect(
+        plugin.start,
+        throwsA(isA<PlatformUnsupportedException>()),
+      );
     });
 
-    test('stop throws UnsupportedError', () {
-      expect(plugin.stop, throwsUnsupportedError);
+    test('stop throws PlatformUnsupportedException', () {
+      expect(
+        plugin.stop,
+        throwsA(isA<PlatformUnsupportedException>()),
+      );
     });
   });
 }

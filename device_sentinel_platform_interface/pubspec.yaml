@@ -1,9 +1,15 @@
 name: device_sentinel_platform_interface
 description: >-
-  A common platform interface for the device_sentinel plugin. Provides the abstract
-  classes, models, and method channel implementation used by platform packages.
-version: 1.0.0
+  A common platform interface for the device_sentinel plugin. Provides abstract
+  classes, models, and method channel implementation shared by all platforms.
+version: 1.1.0
+homepage: https://github.com/Crdzbird/device_sentinel
 repository: https://github.com/Crdzbird/device_sentinel
+issue_tracker: https://github.com/Crdzbird/device_sentinel/issues
+topics:
+  - hardware-buttons
+  - device-security
+  - flutter-plugin
 
 environment:
   sdk: ^3.0.0

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 /// [start] starts button listening; security config keys are ignored.
 /// [stop] stops button listening.
 mixin ButtonOnlyEventChannelMixin on DeviceSentinelPlatform {
-  /// The primary method channel (button lifecycle + getPlatformName).
+  /// The primary method channel for button lifecycle calls.
   MethodChannel get methodChannel;
 
   /// The event channel that receives button events from native.
@@ -26,7 +26,7 @@ mixin ButtonOnlyEventChannelMixin on DeviceSentinelPlatform {
           ),
         )
         .cast<DeviceEvent>()
-        .asBroadcastStream();
+        .asBroadcastStream(onCancel: (_) => _eventsStream = null);
     return _eventsStream!;
   }
 
@@ -41,10 +41,5 @@ mixin ButtonOnlyEventChannelMixin on DeviceSentinelPlatform {
   @override
   Future<void> stop() {
     return methodChannel.invokeMethod<void>('stopListening');
-  }
-
-  @override
-  Future<String?> getPlatformName() {
-    return methodChannel.invokeMethod<String>('getPlatformName');
   }
 }

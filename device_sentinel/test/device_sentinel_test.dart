@@ -79,29 +79,5 @@ void main() {
         verify(() => platform.stop()).called(1);
       });
     });
-
-    group('getPlatformName (deprecated)', () {
-      test('returns correct name', () async {
-        const platformName = '__test_platform__';
-        when(
-          () => platform.getPlatformName(),
-        ).thenAnswer((_) async => platformName);
-
-        // Calling deprecated API to verify backward compatibility.
-        // ignore: deprecated_member_use_from_same_package
-        final actualPlatformName = await getPlatformName();
-        expect(actualPlatformName, equals(platformName));
-      });
-
-      test('throws when null', () async {
-        when(
-          () => platform.getPlatformName(),
-        ).thenAnswer((_) async => null);
-
-        // Calling deprecated API to verify backward compatibility.
-        // ignore: deprecated_member_use_from_same_package
-        expect(getPlatformName, throwsException);
-      });
-    });
   });
 }

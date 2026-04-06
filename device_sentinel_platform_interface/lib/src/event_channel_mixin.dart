@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 
 /// Mixin that provides the unified [DeviceEvent] stream implementation
 /// by merging button and security [EventChannel]s, plus common
-/// [MethodChannel] delegation for `start`, `stop`, and `getPlatformName`.
+/// [MethodChannel] delegation for [start] and [stop].
 ///
 /// Platform implementations should mix this in and override the four
 /// channel getters.
 mixin EventChannelMixin on DeviceSentinelPlatform {
-  /// The primary method channel (button lifecycle + getPlatformName).
+  /// The primary method channel for button lifecycle calls.
   MethodChannel get methodChannel;
 
   /// The event channel that receives button events from native.
@@ -35,7 +35,7 @@ mixin EventChannelMixin on DeviceSentinelPlatform {
             Map<String, dynamic>.from(event as Map),
           ),
         )
-        .asBroadcastStream();
+        .asBroadcastStream(onCancel: (_) => _buttonStream = null);
     return _buttonStream!;
   }
 
@@ -46,7 +46,7 @@ mixin EventChannelMixin on DeviceSentinelPlatform {
         .map((event) => DeviceSecurityEvent.parse(event as String))
         .where((e) => e != null)
         .cast<DeviceSecurityEvent>()
-        .asBroadcastStream();
+        .asBroadcastStream(onCancel: (_) => _securityStream = null);
     return _securityStream!;
   }
 
@@ -70,8 +70,12 @@ mixin EventChannelMixin on DeviceSentinelPlatform {
         );
       },
       onCancel: () async {
-        await buttonSub?.cancel();
-        await securitySub?.cancel();
+        await Future.wait([
+          if (buttonSub != null) buttonSub!.cancel(),
+          if (securitySub != null) securitySub!.cancel(),
+          controller.close(),
+        ]);
+        _eventsStream = null;
       },
     );
 
@@ -81,24 +85,22 @@ mixin EventChannelMixin on DeviceSentinelPlatform {
 
   @override
   Future<void> start({SentinelConfig config = const SentinelConfig()}) async {
-    await methodChannel.invokeMethod<void>(
-      'startListening',
-      config.toButtonMap(),
-    );
-    await securityMethodChannel.invokeMethod<void>(
-      'startSecurityMonitoring',
-      config.toSecurityMap(),
-    );
+    await Future.wait([
+      methodChannel.invokeMethod<void>(
+        'startListening',
+        config.toButtonMap(),
+      ),
+      securityMethodChannel.invokeMethod<void>(
+        'startSecurityMonitoring',
+        config.toSecurityMap(),
+      ),
+    ]);
   }
 
   @override
   Future<void> stop() async {
-    await methodChannel.invokeMethod<void>('stopListening');
-    await securityMethodChannel.invokeMethod<void>('stopSecurityMonitoring');
-  }
-
-  @override
-  Future<String?> getPlatformName() {
-    return methodChannel.invokeMethod<String>('getPlatformName');
+    await Future.wait([
+     methodChannel.invokeMethod<void>('stopListening'),
+     securityMethodChannel.invokeMethod<void>('stopSecurityMonitoring'),]);
   }
 }

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0
+
+- Unified API: single `events` stream, `start(config:)`, and `stop()` replace separate button/security APIs.
+- New `SentinelConfig` with per-button interception and security category toggles.
+- Typed exception hierarchy: `DeviceSentinelException`, `PlatformUnsupportedException`, `InvalidEventDataException`, `UnknownButtonException`, `UnknownButtonActionException`.
+- Fix `StreamController` leak in `EventChannelMixin`.
+- Remove `unawaited` usage from example app.
+- Remove legacy `DeviceSentinelConfig`, `SecurityConfig`, and `getPlatformName()` API.
+- Add `homepage`, `issue_tracker`, and `topics` to all pubspec.yaml for pub.dev scoring.
+- Update LICENSE to credit DEVotion and Crdzbird.
+- Improve README documentation across all sub-packages.
+- Add example files to all sub-packages.
+
 ## 1.0.0
 
 - **BREAKING**: Renamed from `vol_spotter` to `device_sentinel`.

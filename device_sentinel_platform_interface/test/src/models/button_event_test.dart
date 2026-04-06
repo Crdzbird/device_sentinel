@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:device_sentinel_platform_interface/device_sentinel_platform_interface.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('ButtonEvent', () {
@@ -16,25 +16,25 @@ void main() {
         expect(result, equals(event));
       });
 
-      test('throws on missing button key', () {
+      test('throws InvalidEventDataException on missing button key', () {
         expect(
           () => ButtonEvent.fromMap(
             const <String, dynamic>{'action': 'pressed'},
           ),
-          throwsArgumentError,
+          throwsA(isA<InvalidEventDataException>()),
         );
       });
 
-      test('throws on missing action key', () {
+      test('throws InvalidEventDataException on missing action key', () {
         expect(
           () => ButtonEvent.fromMap(
             const <String, dynamic>{'button': 'volumeUp'},
           ),
-          throwsArgumentError,
+          throwsA(isA<InvalidEventDataException>()),
         );
       });
 
-      test('throws on invalid button value', () {
+      test('throws UnknownButtonException on invalid button value', () {
         expect(
           () => ButtonEvent.fromMap(
             const <String, dynamic>{
@@ -42,11 +42,11 @@ void main() {
               'action': 'pressed',
             },
           ),
-          throwsArgumentError,
+          throwsA(isA<UnknownButtonException>()),
         );
       });
 
-      test('throws on invalid action value', () {
+      test('throws UnknownButtonActionException on invalid action', () {
         expect(
           () => ButtonEvent.fromMap(
             const <String, dynamic>{
@@ -54,23 +54,23 @@ void main() {
               'action': 'invalid',
             },
           ),
-          throwsArgumentError,
+          throwsA(isA<UnknownButtonActionException>()),
         );
       });
 
-      test('throws when values are not strings', () {
+      test('throws InvalidEventDataException when values are not strings', () {
         expect(
           () => ButtonEvent.fromMap(
             const <String, dynamic>{'button': 123, 'action': 456},
           ),
-          throwsArgumentError,
+          throwsA(isA<InvalidEventDataException>()),
         );
       });
 
-      test('throws on empty map', () {
+      test('throws InvalidEventDataException on empty map', () {
         expect(
           () => ButtonEvent.fromMap(const <String, dynamic>{}),
-          throwsArgumentError,
+          throwsA(isA<InvalidEventDataException>()),
         );
       });
     });

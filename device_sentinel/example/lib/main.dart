@@ -53,11 +53,7 @@ class _HomePageState extends State<HomePage> {
   // ---------------------------------------------------------------------------
 
   Future<void> _toggle() async {
-    if (_monitoring) {
-      await _stop();
-    } else {
-      await _start();
-    }
+    await (_monitoring ? _stop() : _start());
   }
 
   Future<void> _start() async {
@@ -91,10 +87,12 @@ class _HomePageState extends State<HomePage> {
         ),
       );
       setState(() => _monitoring = true);
-      // ignore: avoid_catching_errors, UnsupportedError is thrown by stubs.
-    } on UnsupportedError {
+    } on PlatformUnsupportedException {
       if (!mounted) return;
       _showSnackBar('Not supported on this platform.');
+    } on DeviceSentinelException catch (e) {
+      if (!mounted) return;
+      _showSnackBar('Sentinel error: $e');
     } on Exception catch (e) {
       if (!mounted) return;
       _showSnackBar('Failed to start: $e');
@@ -117,9 +115,9 @@ class _HomePageState extends State<HomePage> {
   // ---------------------------------------------------------------------------
 
   @override
-  void dispose() {
-    unawaited(_eventSub?.cancel());
-    if (_monitoring) unawaited(_sentinel.stop());
+  Future<void> dispose() async {
+    await _eventSub?.cancel();
+    if (_monitoring) await _sentinel.stop();
     super.dispose();
   }
 
@@ -171,9 +169,8 @@ class _HomePageState extends State<HomePage> {
             onInterceptVolumeDownChanged: _monitoring
                 ? null
                 : (v) => setState(() => _interceptVolumeDown = v),
-            onInterceptPowerChanged: _monitoring
-                ? null
-                : (v) => setState(() => _interceptPower = v),
+            onInterceptPowerChanged:
+                _monitoring ? null : (v) => setState(() => _interceptPower = v),
             onClear: () => setState(
               () => _eventLog.removeWhere((e) => e.event is ButtonEvent),
             ),
@@ -202,8 +199,8 @@ class _HomePageState extends State<HomePage> {
                 ? null
                 : (v) => setState(() => _monitorSecurityPosture = v),
             onClear: () => setState(
-              () => _eventLog
-                  .removeWhere((e) => e.event is DeviceSecurityEvent),
+              () =>
+                  _eventLog.removeWhere((e) => e.event is DeviceSecurityEvent),
             ),
           ),
         ],
@@ -395,8 +392,7 @@ class _ButtonTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   itemCount: log.length,
-                  itemBuilder: (_, i) =>
-                      _ButtonEventTile(entry: log[i]),
+                  itemBuilder: (_, i) => _ButtonEventTile(entry: log[i]),
                 ),
         ),
       ],
@@ -586,8 +582,7 @@ class _SecurityTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   itemCount: log.length,
-                  itemBuilder: (_, i) =>
-                      _SecurityEventTile(entry: log[i]),
+                  itemBuilder: (_, i) => _SecurityEventTile(entry: log[i]),
                 ),
         ),
       ],
@@ -605,8 +600,7 @@ class _SecurityTab extends StatelessWidget {
             Icon(
               monitoring ? Icons.hearing : Icons.security,
               size: 48,
-              color: theme.colorScheme.onSurfaceVariant
-                  .withValues(alpha: 0.4),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
             Text(
@@ -628,8 +622,8 @@ class _SecurityTab extends StatelessWidget {
                       'which events to monitor.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant
-                    .withValues(alpha: 0.7),
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -843,8 +837,7 @@ _SecurityEventInfo _securityEventInfo(DeviceSecurityEvent event) {
         category: 'SHUTDOWN',
         categoryColor: _kShutdownColor,
       ),
-    UncleanShutdownDetected(:final lastSeenTimestamp) =>
-      _SecurityEventInfo(
+    UncleanShutdownDetected(:final lastSeenTimestamp) => _SecurityEventInfo(
         icon: Icons.warning_amber,
         title: 'Unclean Shutdown',
         subtitle: 'Crash or force-kill detected\n'
@@ -880,12 +873,10 @@ _SecurityEventInfo _securityEventInfo(DeviceSecurityEvent event) {
         category: 'CONNECTIVITY',
         categoryColor: _kConnectivityColor,
       ),
-    NetworkCapsChanged(:final hasWifi, :final hasMobile) =>
-      _SecurityEventInfo(
+    NetworkCapsChanged(:final hasWifi, :final hasMobile) => _SecurityEventInfo(
         icon: Icons.swap_vert,
         title: 'Network Caps Changed',
-        subtitle:
-            'WiFi: ${hasWifi ? "available" : "off"}, '
+        subtitle: 'WiFi: ${hasWifi ? "available" : "off"}, '
             'Mobile: ${hasMobile ? "available" : "off"}',
         category: 'CONNECTIVITY',
         categoryColor: _kConnectivityColor,

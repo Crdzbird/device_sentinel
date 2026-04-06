@@ -1,10 +1,15 @@
 import 'package:device_sentinel_platform_interface/src/models/button_action.dart';
 import 'package:device_sentinel_platform_interface/src/models/device_event.dart';
+import 'package:device_sentinel_platform_interface/src/models/device_sentinel_exception.dart';
 import 'package:device_sentinel_platform_interface/src/models/physical_button.dart';
 import 'package:meta/meta.dart';
 
 /// {@template button_event}
 /// An event representing a physical button press or release.
+///
+/// Each [ButtonEvent] combines a [PhysicalButton] (which button was
+/// interacted with) and a [ButtonAction] (whether it was pressed or
+/// released).
 /// {@endtemplate}
 @immutable
 final class ButtonEvent extends DeviceEvent {
@@ -17,11 +22,16 @@ final class ButtonEvent extends DeviceEvent {
   /// ```json
   /// {"button": "volumeUp", "action": "pressed"}
   /// ```
+  ///
+  /// Throws [InvalidEventDataException] when the map does not contain the
+  /// required `button` and `action` string entries.
   factory ButtonEvent.fromMap(Map<String, dynamic> map) {
     final button = map['button'];
     final action = map['action'];
     if (button is! String || action is! String) {
-      throw ArgumentError('Invalid ButtonEvent map: $map');
+      throw InvalidEventDataException(
+        details: 'Invalid ButtonEvent map: $map',
+      );
     }
     return ButtonEvent(
       button: PhysicalButton.fromString(button),

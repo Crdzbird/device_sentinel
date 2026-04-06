@@ -1,19 +1,31 @@
+import 'package:device_sentinel_platform_interface/src/models/device_sentinel_exception.dart';
 import 'package:meta/meta.dart';
 
+/// {@template button_action}
 /// Represents the action performed on a physical button.
+///
+/// Use [ButtonAction.fromString] to deserialize from a platform channel value,
+/// or pattern-match on the sealed subtypes:
+///
+/// ```dart
+/// switch (action) {
+///   case ButtonPressed(): // ...
+///   case ButtonReleased(): // ...
+/// }
+/// ```
+/// {@endtemplate}
 @immutable
 sealed class ButtonAction {
+  /// {@macro button_action}
   const ButtonAction();
 
   /// Deserializes a [ButtonAction] from its string [value].
+  ///
+  /// Throws [UnknownButtonActionException] if [value] is not recognised.
   factory ButtonAction.fromString(String value) => switch (value) {
         'pressed' => const ButtonPressed(),
         'released' => const ButtonReleased(),
-        _ => throw ArgumentError.value(
-          value,
-          'value',
-          'Unknown action type',
-        ),
+        _ => throw UnknownButtonActionException(value: value),
       };
 
   /// Serialization key for this action type.

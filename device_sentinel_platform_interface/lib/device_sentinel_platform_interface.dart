@@ -53,7 +53,4 @@ abstract class DeviceSentinelPlatform extends PlatformInterface {
 
   /// Stops all monitoring and releases native resources.
   Future<void> stop();
-
-  /// Returns the name of the current platform.
-  Future<String?> getPlatformName();
 }

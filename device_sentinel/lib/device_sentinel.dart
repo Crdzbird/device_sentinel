@@ -15,11 +15,14 @@ export 'package:device_sentinel_platform_interface/device_sentinel_platform_inte
         DeviceEvent,
         DeviceLocked,
         DeviceSecurityEvent,
+        DeviceSentinelException,
         DeviceUnlocked,
+        InvalidEventDataException,
         NetworkCapsChanged,
         NetworkConnected,
         NetworkDisconnected,
         PhysicalButton,
+        PlatformUnsupportedException,
         PowerButton,
         PowerConnected,
         PowerDisconnected,
@@ -31,6 +34,8 @@ export 'package:device_sentinel_platform_interface/device_sentinel_platform_inte
         SentinelConfig,
         ShutdownDetected,
         UncleanShutdownDetected,
+        UnknownButtonActionException,
+        UnknownButtonException,
         UsbDebuggingDisabled,
         UsbDebuggingEnabled,
         UserPresent,
@@ -82,17 +87,15 @@ class DeviceSentinel {
   ///   [SentinelConfig.interceptVolumeDown], [SentinelConfig.interceptPower]
   /// - **Security categories**: [SentinelConfig.monitorShutdown],
   ///   [SentinelConfig.monitorConnectivity], etc.
+  ///
+  /// Throws [PlatformUnsupportedException] on platforms that do not support
+  /// monitoring (Linux, Web).
   Future<void> start({SentinelConfig config = const SentinelConfig()}) =>
       _platform.start(config: config);
 
   /// Stops all monitoring and releases native resources.
+  ///
+  /// Throws [PlatformUnsupportedException] on platforms that do not support
+  /// monitoring (Linux, Web).
   Future<void> stop() => _platform.stop();
-}
-
-/// Returns the name of the current platform.
-@Deprecated('Use DeviceSentinel instead.')
-Future<String> getPlatformName() async {
-  final platformName = await _platform.getPlatformName();
-  if (platformName == null) throw Exception('Unable to get platform name.');
-  return platformName;
 }

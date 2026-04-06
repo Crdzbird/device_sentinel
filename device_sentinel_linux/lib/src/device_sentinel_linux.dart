@@ -1,16 +1,16 @@
 import 'package:device_sentinel_platform_interface/device_sentinel_platform_interface.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
+/// {@template device_sentinel_linux}
 /// The Linux implementation of [DeviceSentinelPlatform].
 ///
 /// Neither button detection nor security monitoring is supported on Linux.
+/// Calling [start] or [stop] throws [PlatformUnsupportedException].
+/// {@endtemplate}
 class DeviceSentinelLinux extends DeviceSentinelPlatform {
-  /// The method channel used to interact with the native platform.
-  @visibleForTesting
-  final methodChannel = const MethodChannel('device_sentinel_linux');
+  /// {@macro device_sentinel_linux}
 
-  /// Registers this class as the default instance of [DeviceSentinelPlatform].
+  /// Registers this class as the default instance of
+  /// [DeviceSentinelPlatform].
   static void registerWith() {
     DeviceSentinelPlatform.instance = DeviceSentinelLinux();
   }
@@ -20,16 +20,17 @@ class DeviceSentinelLinux extends DeviceSentinelPlatform {
 
   @override
   Future<void> start({SentinelConfig config = const SentinelConfig()}) {
-    throw UnsupportedError('start is not supported on Linux.');
+    throw const PlatformUnsupportedException(
+      platform: 'Linux',
+      operation: 'start',
+    );
   }
 
   @override
   Future<void> stop() {
-    throw UnsupportedError('stop is not supported on Linux.');
-  }
-
-  @override
-  Future<String?> getPlatformName() {
-    return methodChannel.invokeMethod<String>('getPlatformName');
+    throw const PlatformUnsupportedException(
+      platform: 'Linux',
+      operation: 'stop',
+    );
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 /// An implementation of [DeviceSentinelPlatform] that uses method channels.
 class MethodChannelDeviceSentinel extends DeviceSentinelPlatform
     with EventChannelMixin {
-  /// The primary method channel (button lifecycle + getPlatformName).
+  /// The primary method channel for button lifecycle calls.
   @override
   @visibleForTesting
   final methodChannel = const MethodChannel('device_sentinel');

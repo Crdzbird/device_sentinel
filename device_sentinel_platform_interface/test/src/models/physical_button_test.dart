@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:device_sentinel_platform_interface/device_sentinel_platform_interface.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('PhysicalButton', () {
@@ -28,7 +28,7 @@ void main() {
       test('throws on unknown value', () {
         expect(
           () => PhysicalButton.fromString('unknown'),
-          throwsArgumentError,
+          throwsA(isA<UnknownButtonException>()),
         );
       });
     });

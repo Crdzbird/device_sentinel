@@ -41,7 +41,6 @@ void main() {
     test('toButtonMap produces correct map', () {
       const config = SentinelConfig(
         interceptVolumeUp: true,
-        interceptVolumeDown: false,
         interceptPower: true,
       );
       expect(config.toButtonMap(), {
@@ -54,7 +53,6 @@ void main() {
     test('toSecurityMap produces correct map', () {
       const config = SentinelConfig(
         monitorShutdown: false,
-        monitorConnectivity: true,
       );
       expect(config.toSecurityMap(), {
         'monitorShutdown': false,
@@ -68,12 +66,9 @@ void main() {
     test('fromMap round-trips correctly', () {
       const original = SentinelConfig(
         interceptVolumeUp: true,
-        interceptVolumeDown: false,
         interceptPower: true,
         monitorShutdown: false,
-        monitorConnectivity: true,
         monitorScreenLock: false,
-        monitorPowerUsb: true,
         monitorSecurityPosture: false,
       );
       final map = original.toMap();

@@ -15,7 +15,7 @@ void main() {
       test('throws on unknown value', () {
         expect(
           () => ButtonAction.fromString('unknown'),
-          throwsArgumentError,
+          throwsA(isA<UnknownButtonActionException>()),
         );
       });
     });

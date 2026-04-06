@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const kPlatformName = 'platformName';
 
   group('$MethodChannelDeviceSentinel', () {
     late MethodChannelDeviceSentinel methodChannelDeviceSentinel;
@@ -18,27 +17,12 @@ void main() {
         methodChannelDeviceSentinel.methodChannel,
         (methodCall) async {
           log.add(methodCall);
-          switch (methodCall.method) {
-            case 'getPlatformName':
-              return kPlatformName;
-            default:
-              return null;
-          }
+          return null;
         },
       );
     });
 
     tearDown(log.clear);
-
-    test('getPlatformName', () async {
-      final platformName =
-          await methodChannelDeviceSentinel.getPlatformName();
-      expect(
-        log,
-        <Matcher>[isMethodCall('getPlatformName', arguments: null)],
-      );
-      expect(platformName, equals(kPlatformName));
-    });
 
     test('start sends default config', () async {
       await methodChannelDeviceSentinel.start();

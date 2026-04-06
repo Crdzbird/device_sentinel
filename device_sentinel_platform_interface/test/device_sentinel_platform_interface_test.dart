@@ -2,8 +2,6 @@ import 'package:device_sentinel_platform_interface/device_sentinel_platform_inte
 import 'package:flutter_test/flutter_test.dart';
 
 class DeviceSentinelMock extends DeviceSentinelPlatform {
-  static const mockPlatformName = 'Mock';
-
   @override
   Stream<DeviceEvent> get events => const Stream.empty();
 
@@ -12,9 +10,6 @@ class DeviceSentinelMock extends DeviceSentinelPlatform {
 
   @override
   Future<void> stop() async {}
-
-  @override
-  Future<String?> getPlatformName() async => mockPlatformName;
 }
 
 void main() {
@@ -25,15 +20,6 @@ void main() {
     setUp(() {
       platform = DeviceSentinelMock();
       DeviceSentinelPlatform.instance = platform;
-    });
-
-    group('getPlatformName', () {
-      test('returns correct name', () async {
-        expect(
-          await DeviceSentinelPlatform.instance.getPlatformName(),
-          equals(DeviceSentinelMock.mockPlatformName),
-        );
-      });
     });
 
     group('events', () {

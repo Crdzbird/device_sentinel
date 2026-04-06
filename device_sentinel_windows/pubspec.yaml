@@ -1,10 +1,15 @@
 name: device_sentinel_windows
 description: >-
-  Windows implementation of the device_sentinel plugin for detecting physical
-  button presses (volume, power) using low-level keyboard hooks and
-  WM_POWERBROADCAST.
-version: 1.0.0
+  Windows implementation of the device_sentinel plugin for detecting hardware
+  button presses using low-level keyboard hooks and WM_POWERBROADCAST.
+version: 1.1.0
+homepage: https://github.com/Crdzbird/device_sentinel
 repository: https://github.com/Crdzbird/device_sentinel
+issue_tracker: https://github.com/Crdzbird/device_sentinel/issues
+topics:
+  - hardware-buttons
+  - device-security
+  - flutter-plugin
 
 environment:
   sdk: ^3.0.0
@@ -19,9 +24,9 @@ flutter:
         dartPluginClass: DeviceSentinelWindows
 
 dependencies:
+  device_sentinel_platform_interface: ^1.0.0
   flutter:
     sdk: flutter
-  device_sentinel_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_test:
